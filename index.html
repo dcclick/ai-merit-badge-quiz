@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Merit Badge Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(to bottom, #eff6ff, #f3e8ff);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #2563eb, #9333ea);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .instructions h2 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin: 10px 0 10px 20px;
+            color: #374151;
+        }
+        
+        .progress-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .progress-bar-fill {
+            height: 12px;
+            background: linear-gradient(to right, #3b82f6, #9333ea);
+            border-radius: 999px;
+            transition: width 0.3s;
+        }
+        
+        .question-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 16px;
+            margin: 12px 0;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+        
+        .option.correct {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .option.incorrect {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .explanation {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        
+        .submit-button {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .submit-button:hover {
+            background: linear-gradient(to right, #059669, #047857);
+        }
+        
+        .submit-button:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin: 25px 0;
+        }
+        
+        .score-display {
+            background: linear-gradient(to right, #dbeafe, #e9d5ff);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 25px 0;
+        }
+        
+        .score-box {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .score-box.correct {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+        }
+        
+        .score-box.incorrect {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .secondary-button {
+            background: linear-gradient(to right, #6b7280, #4b5563);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .primary-button {
+            background: linear-gradient(to right, #3b82f6, #9333ea);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎖️ AI Merit Badge Quiz</h1>
+            <p>Test Your AI Knowledge!</p>
+            <p style="font-size: 14px; margin-top: 10px;">8 Questions • No Time Limit • Learn as You Go</p>
+        </div>
+        
+        <div id="instructionsSection" class="instructions">
+            <h2>📋 Instructions</h2>
+            <ul>
+                <li><strong>1.</strong> Read each question carefully</li>
+                <li><strong>2.</strong> Click on your answer choice</li>
+                <li><strong>3.</strong> Answer all 8 questions before submitting</li>
+                <li><strong>4.</strong> Review the explanations to learn more!</li>
+            </ul>
+        </div>
+        
+        <div id="progressSection" class="progress-bar">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="font-weight: bold; color: #374151;">Progress</span>
+                <span style="font-weight: bold; color: #2563eb;"><span id="answeredCount">0</span> / 8</span>
+            </div>
+            <div style="background: #e5e7eb; border-radius: 999px; height: 12px;">
+                <div id="progressBar" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+        
+        <div id="questionsContainer"></div>
+        
+        <div class="results">
+            <button id="submitButton" class="submit-button" onclick="submitQuiz()" disabled>
+                📝 Answer All Questions (0/8)
+            </button>
+        </div>
+        
+        <div id="resultsSection" class="hidden">
+            <div class="results">
+                <div class="score-display">
+                    <p style="color: #6b7280; font-weight: bold; margin-bottom: 10px;">Your Score</p>
+                    <div class="score-number">
+                        <span id="scoreValue">0</span> / 8
+                    </div>
+                    <p style="font-size: 24px; font-weight: bold; color: #9333ea; margin: 10px 0;" id="scorePercentage">0%</p>
+                    <p style="font-size: 18px; font-weight: bold; color: #374151;" id="scoreMessage"></p>
+                </div>
+                
+                <div class="score-grid">
+                    <div class="score-box correct">
+                        <p style="font-weight: bold; color: #047857; margin-bottom: 10px;">✓ Correct</p>
+                        <p style="font-size: 32px; font-weight: bold; color: #10b981;" id="correctCount">0</p>
+                    </div>
+                    <div class="score-box incorrect">
+                        <p style="font-weight: bold; color: #b91c1c; margin-bottom: 10px;">✗ Incorrect</p>
+                        <p style="font-size: 32px; font-weight: bold; color: #ef4444;" id="incorrectCount">0</p>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="secondary-button" onclick="resetQuiz()">🔄 Retake Quiz</button>
+                    <button class="primary-button" onclick="scrollToTop()">📚 Review Answers</button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #6b7280;">
+            <p>🎖️ AI Merit Badge - Session 1 Pre-Assessment</p>
+            <p style="margin-top: 10px;">Ready to learn more? Let's dive into AI history and ethics!</p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "Which type of AI exists today and is in your smartphone?",
+                options: [
+                    "Artificial General Intelligence (AGI)",
+                    "Narrow AI (Weak AI)",
+                    "Artificial Superintelligence (ASI)",
+                    "Strong AI"
+                ],
+                correct: 1,
+                explanation: "Narrow AI (Weak AI) is designed for specific tasks like voice recognition or recommendations. All AI we use today is Narrow AI - it excels at one thing but can't transfer that knowledge to other tasks."
+            },
+            {
+                id: 2,
+                question: "What is the main difference between Narrow AI and Artificial General Intelligence (AGI)?",
+                options: [
+                    "AGI is faster than Narrow AI",
+                    "Narrow AI can only do one task, AGI could do any intellectual task humans can",
+                    "AGI uses more electricity",
+                    "Narrow AI is newer technology"
+                ],
+                correct: 1,
+                explanation: "Narrow AI excels at specific tasks (like chess or language translation). AGI would be able to learn and apply knowledge across any domain like humans do - but AGI doesn't exist yet!"
+            },
+            {
+                id: 3,
+                question: "In 1997, IBM's Deep Blue defeated world chess champion Garry Kasparov. What type of AI was Deep Blue?",
+                options: [
+                    "General AI, because it was really smart",
+                    "Narrow AI, because it could only play chess",
+                    "Superintelligence, because it beat a human",
+                    "Weak AI, because it couldn't beat everyone"
+                ],
+                correct: 1,
+                explanation: "Despite beating the world champion, Deep Blue was Narrow AI - it could ONLY play chess. It couldn't have a conversation, drive a car, or do anything else. Being excellent at one task doesn't make it General AI."
+            },
+            {
+                id: 4,
+                question: "An AI hiring system trained on 20 years of past company data ranks male applicants higher than female applicants with identical qualifications. What ethical issue does this demonstrate?",
+                options: [
+                    "Privacy violation",
+                    "Algorithmic bias",
+                    "Lack of transparency",
+                    "Energy consumption"
+                ],
+                correct: 1,
+                explanation: "This is algorithmic bias - the AI learned from historical data that reflected past gender discrimination. The AI isn't 'sexist' itself, but it learned and amplified patterns from biased training data."
+            },
+            {
+                id: 5,
+                question: "Which scenario describes Artificial Superintelligence (ASI)?",
+                options: [
+                    "A chatbot that can answer questions in multiple languages",
+                    "An AI that surpasses human intelligence in all areas - creativity, problem-solving, social skills, and more",
+                    "A computer that can beat humans at any game",
+                    "An AI assistant that helps doctors diagnose diseases"
+                ],
+                correct: 1,
+                explanation: "ASI would exceed human intelligence in EVERY domain - not just computation but creativity, wisdom, social skills, and emotional intelligence. This is purely theoretical and doesn't exist. Some researchers debate if it's even possible!"
+            },
+            {
+                id: 6,
+                question: "Why is 'transparency' important in AI systems used for critical decisions (like medical diagnosis or loan approvals)?",
+                options: [
+                    "So the AI uses less energy",
+                    "So people can understand how and why the AI made its decision",
+                    "So the AI works faster",
+                    "So the AI can be smaller"
+                ],
+                correct: 1,
+                explanation: "Transparency (also called 'explainability') means understanding how AI reaches its conclusions. If an AI denies your loan or misdiagnoses an illness, you deserve to know why - not just get a mysterious 'black box' decision."
+            },
+            {
+                id: 7,
+                question: "Which of these represents the current state of AI development?",
+                options: [
+                    "We have achieved AGI, but not ASI",
+                    "We only have Narrow AI; AGI and ASI don't exist yet",
+                    "We have ASI in research labs but not in products",
+                    "We have AGI in some countries but not others"
+                ],
+                correct: 1,
+                explanation: "All AI in use today - from ChatGPT to self-driving cars to medical diagnosis systems - is Narrow AI designed for specific tasks. AGI (general intelligence) and ASI (superintelligence) remain theoretical."
+            },
+            {
+                id: 8,
+                question: "If an AI system causes harm (like a self-driving car accident or a biased hiring decision), who should be held accountable?",
+                options: [
+                    "The AI itself - it made the decision",
+                    "No one - accidents happen",
+                    "The developers, company, and/or users depending on the situation",
+                    "Only the people who used the AI"
+                ],
+                correct: 2,
+                explanation: "This is the accountability challenge! AI can't be 'blamed' - it's a tool. Responsibility might fall on developers (poor design), companies (insufficient testing), or users (misuse). This is an active area of legal and ethical debate."
+            }
+        ];
+
+        let userAnswers = {};
+        let showResults = false;
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${q.id}`;
+                
+                let html = `
+                    <div class="question-text">
+                        <span class="question-number">${index + 1}</span>
+                        ${q.question}
+                    </div>
+                `;
+                
+                q.options.forEach((option, optionIndex) => {
+                    const isSelected = userAnswers[q.id] === optionIndex;
+                    const isCorrect = optionIndex === q.correct;
+                    let optionClass = 'option';
+                    
+                    if (showResults) {
+                        if (isSelected && isCorrect) optionClass += ' correct';
+                        else if (isSelected && !isCorrect) optionClass += ' incorrect';
+                        else if (isCorrect) optionClass += ' correct';
+                    } else if (isSelected) {
+                        optionClass += ' selected';
+                    }
+                    
+                    html += `
+                        <div class="${optionClass}" onclick="${showResults ? '' : `selectAnswer(${q.id}, ${optionIndex})`}">
+                            ${isCorrect && showResults ? '✓ ' : ''}${isSelected && !isCorrect && showResults ? '✗ ' : ''}${option}
+                        </div>
+                    `;
+                });
+                
+                if (showResults) {
+                    html += `
+                        <div class="explanation">
+                            <div class="explanation-title">💡 Explanation:</div>
+                            <div>${q.explanation}</div>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+        }
+
+        function selectAnswer(questionId, answerIndex) {
+            if (showResults) return;
+            userAnswers[questionId] = answerIndex;
+            updateProgress();
+            renderQuestions();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(userAnswers).length;
+            const percentage = (answered / questions.length) * 100;
+            
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            
+            const submitButton = document.getElementById('submitButton');
+            if (answered === questions.length) {
+                submitButton.disabled = false;
+                submitButton.textContent = '🎯 Submit Quiz';
+            } else {
+                submitButton.disabled = true;
+                submitButton.textContent = `📝 Answer All Questions (${answered}/${questions.length})`;
+            }
+        }
+
+        function submitQuiz() {
+            showResults = true;
+            
+            let correct = 0;
+            questions.forEach(q => {
+                if (userAnswers[q.id] === q.correct) correct++;
+            });
+            
+            const percentage = Math.round((correct / questions.length) * 100);
+            let message = '';
+            if (percentage === 100) message = "Perfect Score! You're an AI Expert! 🌟";
+            else if (percentage >= 75) message = "Excellent Work! You know your AI! 🎉";
+            else if (percentage >= 50) message = "Good Job! You're learning! 👍";
+            else message = "Keep Learning! AI is complex! 💪";
+            
+            document.getElementById('scoreValue').textContent = correct;
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+            document.getElementById('scoreMessage').textContent = message;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = questions.length - correct;
+            
+            document.getElementById('instructionsSection').classList.add('hidden');
+            document.getElementById('progressSection').classList.add('hidden');
+            document.getElementById('submitButton').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+            
+            renderQuestions();
+            scrollToTop();
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            showResults = false;
+            
+            document.getElementById('instructionsSection').classList.remove('hidden');
+            document.getElementById('progressSection').classList.remove('hidden');
+            document.getElementById('submitButton').classList.remove('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            
+            updateProgress();
+            renderQuestions();
+            scrollToTop();
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>

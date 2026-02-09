@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Merit Badge Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .intro {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .question-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .question-text {
+            font-size: 1.15em;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .feedback strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            font-weight: bold;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        
+        .score-message {
+            font-size: 1.3em;
+            margin: 20px 0;
+            color: #333;
+        }
+        
+        .restart-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .restart-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Merit Badge Quiz</h1>
+            <p>Test Your Knowledge of Artificial Intelligence</p>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <strong>Instructions:</strong> This quiz covers the key concepts you need to know for the AI Merit Badge. Read each question carefully and select the best answer. You'll receive instant feedback on each question. Good luck!
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            
+            <form id="quizForm">
+                <!-- Question 1 -->
+                <div class="question-container" data-question="1">
+                    <div class="question-header">
+                        <span class="question-number">Question 1</span>
+                    </div>
+                    <div class="question-text">
+                        Netflix recommends movies based on what you've watched before, and Siri answers specific questions you ask it. Both are excellent at their designed purposes but cannot do each other's jobs. What type of AI are these examples of?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q1" value="A">
+                            <span>A) General AI, because they both seem intelligent</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="B">
+                            <span>B) Superintelligent AI, because they learn from data</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="C">
+                            <span>C) Narrow AI, because each is designed for one specific task</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="D">
+                            <span>D) Machine Learning systems only, not AI</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-container" data-question="2">
+                    <div class="question-header">
+                        <span class="question-number">Question 2</span>
+                    </div>
+                    <div class="question-text">
+                        You set up an automation that sends you a text message every time your doorbell camera detects motion. What is the motion detection called in this automation?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q2" value="A">
+                            <span>A) A workflow</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="B">
+                            <span>B) A variable</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="C">
+                            <span>C) A trigger</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="D">
+                            <span>D) A database</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-container" data-question="3">
+                    <div class="question-header">
+                        <span class="question-number">Question 3</span>
+                    </div>
+                    <div class="question-text">
+                        What is the main difference between basic programming and Machine Learning?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q3" value="A">
+                            <span>A) Programming uses variables, Machine Learning doesn't</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="B">
+                            <span>B) In basic programming you write specific instructions for every situation; in Machine Learning the system learns patterns from data</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="C">
+                            <span>C) Programming is newer technology than Machine Learning</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="D">
+                            <span>D) Machine Learning doesn't require any data</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-container" data-question="4">
+                    <div class="question-header">
+                        <span class="question-number">Question 4</span>
+                    </div>
+                    <div class="question-text">
+                        A company creates a bot that automatically responds "Thank you for your message! A human will reply within 24 hours" to every customer email. Why is this called a bot?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q4" value="A">
+                            <span>A) Because it's a physical robot</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="B">
+                            <span>B) Because it's an automated software program performing a repetitive task</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="C">
+                            <span>C) Because it uses General AI</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="D">
+                            <span>D) Because it stores information in databases</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-container" data-question="5">
+                    <div class="question-header">
+                        <span class="question-number">Question 5</span>
+                    </div>
+                    <div class="question-text">
+                        In a program, you create storage for a student's test score that starts at 85 but might change to 90 after extra credit is added. What programming concept are you using?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q5" value="A">
+                            <span>A) A database</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="B">
+                            <span>B) A trigger</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="C">
+                            <span>C) A variable</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="D">
+                            <span>D) A workflow</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-container" data-question="6">
+                    <div class="question-header">
+                        <span class="question-number">Question 6</span>
+                    </div>
+                    <div class="question-text">
+                        An AI system for approving loans was trained using data from 1990-2000. During that time, the bank unfairly denied loans to certain neighborhoods. Now the AI has learned to make similar unfair decisions. What is this problem called?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q6" value="A">
+                            <span>A) Narrow AI limitation</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="B">
+                            <span>B) AI bias from prejudiced training data</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="C">
+                            <span>C) Machine Learning working correctly</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="D">
+                            <span>D) A trigger malfunction</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="question-container" data-question="7">
+                    <div class="question-header">
+                        <span class="question-number">Question 7</span>
+                    </div>
+                    <div class="question-text">
+                        A library automation system follows these steps: (1) Student scans book, (2) System checks database if book is available, (3) System updates checkout record, (4) System prints receipt. What is this sequence of connected steps called?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q7" value="A">
+                            <span>A) A workflow</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="B">
+                            <span>B) A variable</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="C">
+                            <span>C) A bot</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="D">
+                            <span>D) Narrow AI</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="question-container" data-question="8">
+                    <div class="question-header">
+                        <span class="question-number">Question 8</span>
+                    </div>
+                    <div class="question-text">
+                        Which of the following describes data in the context of AI?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q8" value="A">
+                            <span>A) Only text files stored on computers</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="B">
+                            <span>B) The physical hardware components of computers</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="C">
+                            <span>C) Information like images, text, and numbers that AI systems use to learn and make decisions</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="D">
+                            <span>D) The speed of internet connections</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 9 -->
+                <div class="question-container" data-question="9">
+                    <div class="question-header">
+                        <span class="question-number">Question 9</span>
+                    </div>
+                    <div class="question-text">
+                        If scientists created an AI that could excel at any mental task a human can do - from writing poetry to diagnosing diseases to learning new skills - what would this be called?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q9" value="A">
+                            <span>A) Narrow AI</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="B">
+                            <span>B) General AI (also called Strong AI or AGI)</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="C">
+                            <span>C) A very advanced bot</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="D">
+                            <span>D) Machine Learning with good training data</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 10 -->
+                <div class="question-container" data-question="10">
+                    <div class="question-header">
+                        <span class="question-number">Question 10</span>
+                    </div>
+                    <div class="question-text">
+                        A school uses AI-powered software that automatically grades essays, schedules parent-teacher conferences, and processes attendance records - handling tasks that teachers and staff used to do manually. What is this type of system called?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q10" value="A">
+                            <span>A) A simple bot</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="B">
+                            <span>B) A database</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="C">
+                            <span>C) Digital workers</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="D">
+                            <span>D) Basic programming</span>
+                        </label>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Quiz</button>
+            </form>
+
+            <div class="results" id="results">
+                <h2>Quiz Complete! 🎉</h2>
+                <div class="score-display" id="scoreDisplay"></div>
+                <div class="score-message" id="scoreMessage"></div>
+                <button class="restart-btn" onclick="location.reload()">Take Quiz Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            q1: { correct: 'C', explanation: 'Narrow AI is designed to excel at specific, well-defined tasks. Netflix\'s recommendation system and Siri are both Narrow AI - each does its specific job very well but cannot do other tasks. Most AI we use today is Narrow AI. General AI would be able to do many different types of tasks like humans can.' },
+            q2: { correct: 'C', explanation: 'A trigger is an event or condition that causes an automated process to start. In this case, motion detection is the trigger that starts the automation of sending you a text message. Triggers answer the question "What makes this start?"' },
+            q3: { correct: 'B', explanation: 'In basic programming, you write specific instructions (code) telling the computer exactly what to do in every situation. In Machine Learning, you provide data and the system learns patterns and improves on its own. Both are valuable but work differently.' },
+            q4: { correct: 'B', explanation: 'Bots are automated software programs that perform repetitive tasks. This bot automatically sends the same message repeatedly without human involvement. Bots don\'t have to be physical robots - most are just software programs.' },
+            q5: { correct: 'C', explanation: 'Variables are named storage locations that hold values that can change during a program\'s execution. The test score is stored in a variable because it might change (from 85 to 90). The word "variable" comes from "varies" or changes.' },
+            q6: { correct: 'B', explanation: 'AI bias occurs when training data contains historical prejudices or isn\'t representative of all groups fairly. The AI learned to make unfair decisions because it was trained on biased historical data. This shows why it\'s important to test AI systems for fairness.' },
+            q7: { correct: 'A', explanation: 'A workflow is a sequence of connected steps or tasks that accomplish a specific process or goal. The library checkout process is a workflow - each step happens in order to complete the checkout task.' },
+            q8: { correct: 'C', explanation: 'Data is information (like images, text, numbers, sensor readings) that AI systems use for training and making decisions. Data is what Machine Learning systems learn from. Good quality, diverse data helps create better AI systems.' },
+            q9: { correct: 'B', explanation: 'General AI (also called Strong AI or AGI) would be able to understand, learn, and perform any intellectual task that a human can across all domains. This doesn\'t exist yet - it\'s theoretical. Narrow AI excels at specific tasks. Superintelligent AI would exceed human intelligence in virtually all domains.' },
+            q10: { correct: 'C', explanation: 'Digital workers are AI-powered software systems that automate business tasks previously done by humans. They typically handle more complex, multi-step processes (like the school\'s various administrative tasks) compared to simple bots that do one repetitive action.' }
+        };
+
+        let answeredQuestions = new Set();
+        
+        // Add event listeners to all radio buttons
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                checkAnswer(this);
+            });
+        });
+
+        function checkAnswer(radio) {
+            const questionNum = radio.name;
+            const container = radio.closest('.question-container');
+            const feedback = container.querySelector('.feedback');
+            const options = container.querySelectorAll('.option');
+            const selectedValue = radio.value;
+            const correctAnswer = answers[questionNum].correct;
+            
+            // Mark this question as answered
+            answeredQuestions.add(questionNum);
+            updateProgress();
+            
+            // Disable all options in this question
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                opt.querySelector('input').disabled = true;
+            });
+            
+            // Highlight correct and incorrect answers
+            options.forEach(opt => {
+                const optValue = opt.querySelector('input').value;
+                if (optValue === correctAnswer) {
+                    opt.classList.add('correct');
+                } else if (optValue === selectedValue && selectedValue !== correctAnswer) {
+                    opt.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedback.classList.add('show');
+            if (selectedValue === correctAnswer) {
+                feedback.classList.add('correct');
+                feedback.innerHTML = `<strong>✓ Correct!</strong> ${answers[questionNum].explanation}`;
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.innerHTML = `<strong>✗ Incorrect.</strong> The correct answer is ${correctAnswer}. ${answers[questionNum].explanation}`;
+            }
+            
+            // Check if all questions are answered
+            if (answeredQuestions.size === 10) {
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        function updateProgress() {
+            const progress = (answeredQuestions.size / 10) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let score = 0;
+            for (let q in answers) {
+                const selected = document.querySelector(`input[name="${q}"]:checked`);
+                if (selected && selected.value === answers[q].correct) {
+                    score++;
+                }
+            }
+            
+            // Show results
+            const results = document.getElementById('results');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreMessage = document.getElementById('scoreMessage');
+            
+            scoreDisplay.textContent = `${score}/10`;
+            
+            let message = '';
+            if (score >= 9) {
+                message = '🏆 Excellent! You have a strong understanding of AI concepts!';
+            } else if (score >= 7) {
+                message = '👍 Good job! You grasp the key ideas. Review the questions you missed.';
+            } else if (score >= 5) {
+                message = '📚 You\'re learning! Study the concepts more and discuss with your counselor.';
+            } else {
+                message = '💪 Keep going! Review all the definitions and examples with your counselor.';
+            }
+            
+            scoreMessage.textContent = message;
+            results.classList.add('show');
+            results.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Disable submit button initially
+        document.getElementById('submitBtn').disabled = true;
+    </script>
+</body>
+</html>
